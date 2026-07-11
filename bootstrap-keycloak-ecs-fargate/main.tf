@@ -5,7 +5,8 @@ provider "aws" {
 }
 
 resource "aws_s3_bucket" "terraform_state" {
-  bucket = "keycloak-ecs-fargate-terraform-state"
+  bucket = "${var.bucket_prefix}-${data.aws_caller_identity.current.account_id}"
+
   lifecycle {
     prevent_destroy = true
   }
