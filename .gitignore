@@ -26,3 +26,6 @@ terraform.rc
 # Key material
 *.pem
 *.key
+
+# Backend configuration
+backend.hcl

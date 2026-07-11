@@ -4,12 +4,10 @@ provider "aws" {
   region = var.aws_region
 }
 
-resource "random_id" "bucket_suffix" {
-  byte_length = 4
-}
+data "aws_caller_identity" "current" {}
 
 resource "aws_s3_bucket" "terraform_state" {
-  bucket = "${var.bucket_prefix}-${random_id.bucket_suffix.hex}"
+  bucket = "${var.bucket_prefix}-${data.aws_caller_identity.current.account_id}"
 
   lifecycle {
     prevent_destroy = true
