@@ -1,16 +1,16 @@
 #main.tf
 
-provider "aws" {
-  region  = var.aws_region
-  profile = var.aws_profile
-}
-
 terraform {
   backend "s3" {
-    bucket       = ""${var.bucket_prefix}-${data.aws_caller_identity.current.account_id}"
+    bucket       = "keycloak-ecs-fargate-terraform-state-e40506ca"
     key          = "keycloak-ecs-fargate/terraform.tfstate"
-    region       = var.aws_region
+    region       = "us-east-1"
     use_lockfile = true
     encrypt      = true
   }
+}
+
+provider "aws" {
+  region  = var.aws_region
+  profile = var.aws_profile
 }

@@ -1,13 +1,15 @@
-# main.tf
+# bootstrap main.tf
 
 provider "aws" {
-  region = "us-east-1"
+  region = var.aws_region
 }
 
-data "aws_caller_identity" "current" {}
+resource "random_id" "bucket_suffix" {
+  byte_length = 4
+}
 
 resource "aws_s3_bucket" "terraform_state" {
-  bucket = "${var.bucket_prefix}-${data.aws_caller_identity.current.account_id}"
+  bucket = "${var.bucket_prefix}-${random_id.bucket_suffix.hex}"
 
   lifecycle {
     prevent_destroy = true
