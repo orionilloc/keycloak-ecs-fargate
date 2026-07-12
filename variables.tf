@@ -11,3 +11,9 @@ variable "aws_profile" {
   type        = string
   default     = ""
 }
+
+variable "project_name" {
+  description = "Project name prefix for resources and tags."
+  type        = string
+  default     = "keycloak-ecs-fargate"
+}
