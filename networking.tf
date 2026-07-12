@@ -10,7 +10,7 @@ resource "aws_vpc" "lab_vpc" {
   }
 }
 
-resource "aws_subnet" "public_subnet" {
+resource "aws_subnet" "public_subnet_a" {
   vpc_id                  = aws_vpc.lab_vpc.id
   cidr_block              = "10.1.1.0/24"
   map_public_ip_on_launch = true
@@ -21,11 +21,33 @@ resource "aws_subnet" "public_subnet" {
   }
 }
 
-resource "aws_subnet" "private_subnet" {
+resource "aws_subnet" "private_subnet_a" {
   vpc_id                  = aws_vpc.lab_vpc.id
   cidr_block              = "10.1.2.0/24"
   map_public_ip_on_launch = false
   availability_zone       = "${var.aws_region}a"
+
+  tags = {
+    Name = "${var.project_name}-PrivateSubnet"
+  }
+}
+
+resource "aws_subnet" "public_subnet_b" {
+  vpc_id                  = aws_vpc.lab_vpc.id
+  cidr_block              = "10.1.1.0/24"
+  map_public_ip_on_launch = true
+  availability_zone       = "${var.aws_region}b"
+
+  tags = {
+    Name = "${var.project_name}-PublicSubnet"
+  }
+}
+
+resource "aws_subnet" "private_subnet_b" {
+  vpc_id                  = aws_vpc.lab_vpc.id
+  cidr_block              = "10.1.2.0/24"
+  map_public_ip_on_launch = false
+  availability_zone       = "${var.aws_region}b"
 
   tags = {
     Name = "${var.project_name}-PrivateSubnet"
@@ -54,7 +76,12 @@ resource "aws_route_table" "public_rt" {
 }
 
 resource "aws_route_table_association" "public_a" {
-  subnet_id      = aws_subnet.public_subnet.id
+  subnet_id      = aws_subnet.public_subnet_a.id
+  route_table_id = aws_route_table.public_rt.id
+}
+
+resource "aws_route_table_association" "public_b" {
+  subnet_id      = aws_subnet.public_subnet_b.id
   route_table_id = aws_route_table.public_rt.id
 }
 
@@ -68,7 +95,7 @@ resource "aws_eip" "nat_eip" {
 
 resource "aws_nat_gateway" "nat_gw" {
   allocation_id = aws_eip.nat_eip.id
-  subnet_id     = aws_subnet.public_subnet.id
+  subnet_id     = aws_subnet.public_subnet_a.id
 
   tags = {
     Name = "${var.project_name}-NATGateway"
@@ -91,6 +118,11 @@ resource "aws_route_table" "private_rt" {
 }
 
 resource "aws_route_table_association" "private_a" {
-  subnet_id      = aws_subnet.private_subnet.id
+  subnet_id      = aws_subnet.private_subnet_a.id
+  route_table_id = aws_route_table.private_rt.id
+}
+
+resource "aws_route_table_association" "private_b" {
+  subnet_id      = aws_subnet.private_subnet_b.id
   route_table_id = aws_route_table.private_rt.id
 }
