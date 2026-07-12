@@ -17,3 +17,9 @@ variable "project_name" {
   type        = string
   default     = "keycloak-ecs-fargate"
 }
+
+variable "domain_name" {
+  description = "Domain name for connecting to Keycloak"
+  type        = string
+  default     = ""
+}
