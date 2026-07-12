@@ -19,7 +19,6 @@ variable "project_name" {
 }
 
 variable "domain_name" {
-  description = "Domain name for connecting to Keycloak"
+  description = "Root domain name for referencing"
   type        = string
-  default     = ""
 }
