@@ -15,18 +15,19 @@ resource "aws_route53_record" "cert_validation" {
   type    = each.value.resource_record_type
   records = [each.value.resource_record_value]
   ttl     = 60
+}
 
 resource "aws_acm_certificate_validation" "keycloak" {
-  certificate_arn         = ???
-  validation_record_fqdns = ???  # comes from the record resource above
+  certificate_arn         = aws_acm_certificate.keycloak.arn
+  validation_record_fqdns = [for record in aws_route53_record.cert_validation : record.fqdn]
 }
 
 resource "aws_lb" "keycloak" {
-  name               = some_var
-  internal           = false  # true or false — think about this one
-  load_balancer_type = ???
-  security_groups    = ???  # which SG from security.tf?
-  subnets            = need to list a and b somehow  # which subnets — public or private, and how many?
+  name               = "${var.project_name}-alb"
+  internal           = false
+  load_balancer_type = "application"
+  security_groups    = [aws_security_group.sg_alb.id]
+  subnets            = [aws_subnet.public_subnet_a.id, aws_subnet.public_subnet_b.id]
 }
 
 resource "aws_lb_target_group" "keycloak" {
