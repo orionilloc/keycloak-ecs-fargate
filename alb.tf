@@ -22,7 +22,7 @@ resource "aws_acm_certificate_validation" "keycloak" {
   validation_record_fqdns = [for record in aws_route53_record.cert_validation : record.fqdn]
 }
 
-resource "aws_lb" "keycloak" {
+resource "aws_lb" "keycloak_alb" {
   name               = "${var.project_name}-alb"
   internal           = false
   load_balancer_type = "application"
@@ -31,7 +31,7 @@ resource "aws_lb" "keycloak" {
 }
 
 resource "aws_lb_target_group" "keycloak" {
-  name        = "${var.project_name}-alb-target-group"
+  name        = "${var.project_name}-alb-tg"
   port        = 8080
   protocol    = "HTTP"
   vpc_id      = aws_vpc.lab_vpc.id
@@ -45,29 +45,29 @@ resource "aws_lb_target_group" "keycloak" {
 }
 
 resource "aws_lb_listener" "https" {
-  load_balancer_arn = ???
-  port              = ???
-  protocol          = ???
-  ssl_policy        = ???  # AWS has a recommended current one — do you know it or want to look it up?
-  certificate_arn   = ???  # depends on validation completing — which resource do you reference?
+  load_balancer_arn = aws_lb.keycloak_alb.arn
+  port              = 443
+  protocol          = "HTTPS"
+  ssl_policy        = "ELBSecurityPolicy-TLS13-1-2-2021-06"
+  certificate_arn   = aws_acm_certificate_validation.keycloak.certificate_arn
 
   default_action {
-    type             = ???
-    target_group_arn = ???
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.keycloak.arn
   }
 }
 
 resource "aws_lb_listener" "http_redirect" {
-  load_balancer_arn = ???
-  port              = ???
-  protocol          = ???
+  load_balancer_arn = aws_lb.keycloak_alb.arn
+  port              = 80
+  protocol          = "HTTP"
 
   default_action {
-    type = ???  # not "forward" — what's the redirect action type?
+    type = "redirect"
     redirect {
-      port        = ???
-      protocol    = ???
-      status_code = ???  # permanent or temporary redirect?
+      port        = 443
+      protocol    = "HTTPS"
+      status_code = "HTTP_301"
     }
   }
 }
