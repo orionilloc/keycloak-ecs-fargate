@@ -31,16 +31,16 @@ resource "aws_lb" "keycloak" {
 }
 
 resource "aws_lb_target_group" "keycloak" {
-  name        = ???
-  port        = ???  # what port does the ECS task listen on?
-  protocol    = ???  # HTTP or HTTPS — where does TLS actually terminate?
-  vpc_id      = ???
-  target_type = ???  # this matters for Fargate specifically — do you know which value?
+  name        = "${var.project_name}-alb-target-group"
+  port        = 8080
+  protocol    = "HTTP"
+  vpc_id      = aws_vpc.lab_vpc.id
+  target_type = "ip"
 
   health_check {
-    path     = ???  # you already have this one in your notes
-    protocol = ???
-    matcher  = ???
+    path     = "/health/ready"
+    protocol = "HTTP"
+    matcher  = "200"
   }
 }
 
