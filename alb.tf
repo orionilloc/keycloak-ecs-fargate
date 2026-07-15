@@ -1,8 +1,12 @@
 #alb.tf
 
 resource "aws_acm_certificate" "keycloak" {
-  domain_name       = var.domain_name
+  domain_name       = "auth.${var.domain_name}"
   validation_method = "DNS"
+
+  lifecycle {
+    create_before_destroy = true
+  }
 }
 
 resource "aws_route53_record" "cert_validation" {
