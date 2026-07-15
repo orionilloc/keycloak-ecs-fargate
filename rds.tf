@@ -14,7 +14,7 @@ resource "aws_db_instance" "keycloak_db" {
   instance_class = "db.t4g.micro"
 
   allocated_storage = 20
-  storage_type       = "gp3"
+  storage_type      = "gp3"
 
   db_name  = "keycloak"
   username = jsondecode(aws_secretsmanager_secret_version.db_credentials.secret_string)["username"]
