@@ -25,7 +25,7 @@ resource "aws_ecs_task_definition" "keycloak" {
       name      = "keycloak"
       image     = "quay.io/keycloak/keycloak:26.6.4"
       essential = true
-      command   = ["start", "--optimized"]
+      command   = ["start"]
 
       portMappings = [
         {
