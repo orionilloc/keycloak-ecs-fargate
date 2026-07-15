@@ -51,7 +51,7 @@ resource "aws_security_group_rule" "ecs_ingress_from_alb" {
 resource "aws_security_group" "sg_rds" {
   vpc_id      = aws_vpc.lab_vpc.id
   name        = "${var.project_name}-rds-sg"
-  description = "Postgres — inbound from ECS task only"
+  description = "Postgres - inbound from ECS task only"
 
   ingress {
     from_port       = 5432
