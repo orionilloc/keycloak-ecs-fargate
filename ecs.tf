@@ -94,7 +94,7 @@ resource "aws_ecs_service" "keycloak" {
     container_port   = 8080
   }
 
-  health_check_grace_period_seconds = 60
+  health_check_grace_period_seconds = 120
 
   depends_on = [aws_lb_listener.https]
 
