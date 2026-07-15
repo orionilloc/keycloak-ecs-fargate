@@ -31,6 +31,10 @@ resource "aws_ecs_task_definition" "keycloak" {
         {
           containerPort = 8080
           protocol      = "tcp"
+        },
+        {
+          containerPort = 9000
+          protocol      = "tcp"
         }
       ]
 
@@ -39,7 +43,8 @@ resource "aws_ecs_task_definition" "keycloak" {
         { name = "KC_DB_URL_DATABASE", value = "keycloak" },
         { name = "KC_HOSTNAME", value = var.domain_name },
         { name = "KC_HTTP_ENABLED", value = "true" },
-        { name = "KC_PROXY", value = "edge" }
+        { name = "KC_PROXY", value = "edge" },
+        { name = "KC_HEALTH_ENABLED", value = "true" }
       ]
 
       secrets = [
