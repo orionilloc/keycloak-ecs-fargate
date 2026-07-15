@@ -43,7 +43,7 @@ resource "aws_iam_role" "ecs_task_role" {
 
 resource "aws_iam_role_policy" "ecs_execution_secrets_read" {
   name = "${var.project_name}-secrets-read"
-  role = aws_iam_role.ecs_task_execution_role
+  role = "aws_iam_role.ecs_task_execution_role"
 
   policy = jsonencode({
     Version = "2012-10-17"
