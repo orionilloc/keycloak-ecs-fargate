@@ -40,6 +40,7 @@ resource "aws_ecs_task_definition" "keycloak" {
 
       environment = [
         { name = "KC_DB_URL_HOST", value = aws_db_instance.keycloak_db.address },
+        { name = "KC_DB", value = "postgres" },
         { name = "KC_DB_URL_DATABASE", value = "keycloak" },
         { name = "KC_HOSTNAME", value = "auth.${var.domain_name}" },
         { name = "KC_HTTP_ENABLED", value = "true" },
