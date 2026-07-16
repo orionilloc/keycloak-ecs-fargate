@@ -41,9 +41,9 @@ resource "aws_ecs_task_definition" "keycloak" {
       environment = [
         { name = "KC_DB_URL_HOST", value = aws_db_instance.keycloak_db.address },
         { name = "KC_DB_URL_DATABASE", value = "keycloak" },
-        { name = "KC_HOSTNAME", value = "auth.${var.domain_name},
+        { name = "KC_HOSTNAME", value = "auth.${var.domain_name}" },
         { name = "KC_HTTP_ENABLED", value = "true" },
-        { name = "KC_PROXY", value = "edge" },
+        { name = "KC_PROXY_HEADERS", value = "xforwarded" },
         { name = "KC_HEALTH_ENABLED", value = "true" }
       ]
 
@@ -57,11 +57,11 @@ resource "aws_ecs_task_definition" "keycloak" {
           valueFrom = "${aws_secretsmanager_secret.db_credentials.arn}:password::"
         },
         {
-          name      = "KEYCLOAK_ADMIN"
+          name      = "KC_BOOTSTRAP_ADMIN_USERNAME"
           valueFrom = "${aws_secretsmanager_secret.kc_admin_credentials.arn}:username::"
         },
         {
-          name      = "KEYCLOAK_ADMIN_PASSWORD"
+          name      = "KC_BOOTSTRAP_ADMIN_PASSWORD"
           valueFrom = "${aws_secretsmanager_secret.kc_admin_credentials.arn}:password::"
         }
       ]
