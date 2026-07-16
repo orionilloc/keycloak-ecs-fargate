@@ -43,6 +43,7 @@ resource "aws_lb_target_group" "keycloak" {
 
   health_check {
     path     = "/health/ready"
+    port     = "9000"
     protocol = "HTTP"
     matcher  = "200"
   }
