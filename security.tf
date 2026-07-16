@@ -39,10 +39,28 @@ resource "aws_security_group_rule" "alb_egress_to_ecs" {
   source_security_group_id = aws_security_group.sg_ecs_task.id
 }
 
+resource "aws_security_group_rule" "alb_egress_to_ecs_health" {
+  type                     = "egress"
+  from_port                = 9000
+  to_port                  = 9000
+  protocol                 = "tcp"
+  security_group_id        = aws_security_group.sg_alb.id
+  source_security_group_id = aws_security_group.sg_ecs_task.id
+}
+
 resource "aws_security_group_rule" "ecs_ingress_from_alb" {
   type                     = "ingress"
   from_port                = 8080
   to_port                  = 8080
+  protocol                 = "tcp"
+  security_group_id        = aws_security_group.sg_ecs_task.id
+  source_security_group_id = aws_security_group.sg_alb.id
+}
+
+resource "aws_security_group_rule" "ecs_ingress_from_alb_health" {
+  type                     = "ingress"
+  from_port                = 9000
+  to_port                  = 9000
   protocol                 = "tcp"
   security_group_id        = aws_security_group.sg_ecs_task.id
   source_security_group_id = aws_security_group.sg_alb.id
