@@ -11,3 +11,9 @@ variable "aws_region" {
   type        = string
   default     = "us-east-1"
 }
+
+variable "project_name" {
+  description = "Project name prefix for resources and tags."
+  type        = string
+  default     = "keycloak-ecs-fargate"
+}
