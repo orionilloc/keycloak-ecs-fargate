@@ -19,6 +19,6 @@ variable "project_name" {
 }
 
 variable "domain_name" {
-  description = "Root domain name for referencing"
+  description = "Root domain name for referencing."
   type        = string
 }
