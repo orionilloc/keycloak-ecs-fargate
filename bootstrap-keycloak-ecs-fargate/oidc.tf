@@ -29,3 +29,11 @@ resource "aws_iam_role_policy" "gha_plan_readonly" {
           "iam:ListAttachedRolePolicies",
           "iam:ListInstanceProfilesForRole",
           "logs:DescribeLogGroups",
+          "logs:ListTagsForResource",
+          "sts:GetCallerIdentity"
+        ]
+        Resource = "*"
+      }
+    ]
+  })
+}
