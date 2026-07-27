@@ -67,3 +67,26 @@ resource "aws_iam_role_policy" "gha_plan_readonly" {
     ]
   })
 }
+
+resource "aws_iam_role_policy" "gha_backend_access" {
+  name = "${var.project_name}-gha-backend-access"
+  role = aws_iam_role.gha_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "s3:GetObject",
+          "s3:PutObject",
+          "s3:ListBucket"
+        ]
+        Resource = [
+          "arn:aws:s3:::${var.bucket_prefix}-${data.aws_caller_identity.current.account_id}",
+          "arn:aws:s3:::${var.bucket_prefix}-${data.aws_caller_identity.current.account_id}/*"
+        ]
+      }
+    ]
+  })
+}
