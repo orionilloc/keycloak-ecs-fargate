@@ -49,6 +49,7 @@ resource "aws_iam_role_policy" "gha_plan_readonly" {
           "route53:GetHostedZone",
           "route53:ListHostedZones",
           "route53:ListResourceRecordSets",
+          "route53:ListTagsForResource"
           "secretsmanager:DescribeSecret",
           "secretsmanager:ListSecrets",
           "secretsmanager:GetResourcePolicy",
@@ -80,7 +81,8 @@ resource "aws_iam_role_policy" "gha_backend_access" {
         Action = [
           "s3:GetObject",
           "s3:PutObject",
-          "s3:ListBucket"
+          "s3:ListBucket",
+          "s3:DeleteObject"
         ]
         Resource = [
           "arn:aws:s3:::${var.bucket_prefix}-${data.aws_caller_identity.current.account_id}",
