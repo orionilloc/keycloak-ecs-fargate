@@ -49,7 +49,7 @@ resource "aws_iam_role_policy" "gha_plan_readonly" {
           "route53:GetHostedZone",
           "route53:ListHostedZones",
           "route53:ListResourceRecordSets",
-          "route53:ListTagsForResource"
+          "route53:ListTagsForResource",
           "secretsmanager:DescribeSecret",
           "secretsmanager:ListSecrets",
           "secretsmanager:GetResourcePolicy",
