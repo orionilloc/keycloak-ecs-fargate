@@ -59,7 +59,8 @@ resource "aws_iam_role_policy" "gha_plan_readonly" {
           "iam:ListInstanceProfilesForRole",
           "logs:DescribeLogGroups",
           "logs:ListTagsForResource",
-          "sts:GetCallerIdentity"
+          "sts:GetCallerIdentity",
+          "access-analyzer:ValidatePolicy"
         ]
         Resource = "*"
       }
