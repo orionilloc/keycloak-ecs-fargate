@@ -49,6 +49,7 @@ resource "aws_iam_role_policy" "gha_plan_readonly" {
           "route53:GetHostedZone",
           "route53:ListHostedZones",
           "route53:ListResourceRecordSets",
+          "route53:ListTagsForResource",
           "secretsmanager:DescribeSecret",
           "secretsmanager:ListSecrets",
           "secretsmanager:GetResourcePolicy",
@@ -59,9 +60,34 @@ resource "aws_iam_role_policy" "gha_plan_readonly" {
           "iam:ListInstanceProfilesForRole",
           "logs:DescribeLogGroups",
           "logs:ListTagsForResource",
-          "sts:GetCallerIdentity"
+          "sts:GetCallerIdentity",
+          "access-analyzer:ValidatePolicy"
         ]
         Resource = "*"
+      }
+    ]
+  })
+}
+
+resource "aws_iam_role_policy" "gha_backend_access" {
+  name = "${var.project_name}-gha-backend-access"
+  role = aws_iam_role.gha_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "s3:GetObject",
+          "s3:PutObject",
+          "s3:ListBucket",
+          "s3:DeleteObject"
+        ]
+        Resource = [
+          "arn:aws:s3:::${var.bucket_prefix}-${data.aws_caller_identity.current.account_id}",
+          "arn:aws:s3:::${var.bucket_prefix}-${data.aws_caller_identity.current.account_id}/*"
+        ]
       }
     ]
   })
