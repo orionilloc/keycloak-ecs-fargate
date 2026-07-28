@@ -15,32 +15,24 @@ jobs:
   terraform:
     name: Validate & Format Check
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
       - name: Configure AWS credentials via OIDC
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.GHA_ROLE_ARN }}
           aws-region: us-east-1
-
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
-
       - name: Terraform Init
         run: terraform init -backend=false
-
       - name: Terraform Format Check
         run: terraform fmt --check
-
       - name: Terraform Validate
         run: terraform validate
-
       - name: Setup TFLint
         uses: terraform-linters/setup-tflint@v4
-
       - name: TFLint
         run: |
           tflint --init
@@ -53,37 +45,63 @@ jobs:
     permissions:
       id-token: write
       contents: read
-
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
       - name: Configure AWS credentials via OIDC
         uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.GHA_ROLE_ARN }}
           aws-region: us-east-1
-
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
-
       - name: Generate backend config
         run: ./scripts/gen-backend-config.sh
-
       - name: Terraform Init (with backend)
         run: terraform init -backend-config=backend.hcl
-
       - name: Terraform Plan
         run: terraform plan -out=tfplan.binary
         env:
           TF_VAR_domain_name: ${{ vars.DOMAIN_NAME }}
-
       - name: Convert Plan to JSON
         run: terraform show -json tfplan.binary > tfplan.json
 
       - name: Validate IAM Policies
-        uses: aws-actions/terraform-aws-iam-policy-validator@v1.0.1
-        with:
-          policy-check-type: 'VALIDATE_POLICY'
-          template-path: tfplan.json
-          region: us-east-1
+        run: |
+          policies=$(jq -c '
+            .planned_values.root_module.resources[]
+            | select(.type == "aws_iam_role_policy"
+                   or .type == "aws_iam_user_policy"
+                   or .type == "aws_iam_group_policy"
+                   or .type == "aws_iam_policy")
+            | {name: .name, type: .type, policy: .values.policy}
+          ' tfplan.json)
+
+          if [ -z "$policies" ]; then
+            echo "No IAM policies found in plan."
+            exit 0
+          fi
+
+          exit_code=0
+          while read -r item; do
+            name=$(echo "$item" | jq -r '.name')
+            rtype=$(echo "$item" | jq -r '.type')
+            echo "$item" | jq -r '.policy' > "policy-${name}.json"
+
+            echo "Validating: $rtype.$name"
+            result=$(aws accessanalyzer validate-policy \
+              --policy-document "file://policy-${name}.json" \
+              --policy-type IDENTITY_POLICY \
+              --region us-east-1)
+
+            echo "$result"
+
+            finding_count=$(echo "$result" | jq '.findings | length')
+            if [ "$finding_count" -gt 0 ]; then
+              echo "::error::Findings detected in $rtype.$name"
+              exit_code=1
+            fi
+            echo "---"
+          done < <(echo "$policies")
+
+          exit $exit_code
