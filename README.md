@@ -2,8 +2,6 @@
 
 This project deploys Keycloak on AWS ECS Fargate, fronted by an Application Load Balancer with ACM-managed TLS, backed by RDS Postgres, with secrets managed via AWS Secrets Manager. The stack (networking, compute, database, IAM, CI/CD) is provisioned with Terraform using only AWS provider resources, and no community modules, so every architectural decision stays explicit.
 
-Read more about the design decisions behind this project on the blog post to be listed here soon: [Part Two](https://orionilloc.github.io/posts/doesntexist) | [Part Three](https://orionilloc.github.io/posts/doesntexist/)
-
 ## Architecture
 
 - **Compute**: ECS Fargate running the Keycloak container. No EC2 instances to patch or manage.
