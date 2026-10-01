@@ -4,6 +4,8 @@ This project deploys Keycloak on AWS ECS Fargate, fronted by an Application Load
 
 ## Architecture
 
+![Architecture diagram](docs/keycloak-ecs-fargate-architecture.jpg)
+
 - **Compute**: ECS Fargate running the Keycloak container. No EC2 instances to patch or manage.
 - **Networking**: dedicated VPC with public/private subnets across two AZs. NAT gateway for outbound internet access, required since Keycloak's identity federation needs to reach external providers.
 - **Load balancing**: ALB with an HTTPS listener (ACM certificate, DNS validated) and HTTP to HTTPS redirect. Target group health check hits Keycloak's dedicated management port.
